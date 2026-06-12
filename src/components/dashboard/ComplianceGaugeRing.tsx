@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import type { RiskLevel } from '@/types';
-import { RISK_LEVEL_META } from '@/types';
+import { RISK_LEVEL_META, RISK_RING_GRADIENT } from '@/types';
 
 interface ComplianceGaugeRingProps {
   /** Nilai 0-100. */
@@ -11,9 +11,11 @@ interface ComplianceGaugeRingProps {
   showRiskLabel?: boolean;
 }
 
+const TRACK_COLOR = '#1E2030';
+
 /**
- * Signature element: SVG arc yang terisi smooth saat mount dengan
- * counter animasi 0 → skor aktual di tengah ring.
+ * Signature element: SVG arc dengan gradient per risk level yang terisi
+ * smooth saat mount, plus counter animasi 0 → skor aktual di tengah ring.
  */
 export function ComplianceGaugeRing({
   value,
@@ -25,8 +27,10 @@ export function ComplianceGaugeRing({
   const [displayValue, setDisplayValue] = useState(0);
   const [arcProgress, setArcProgress] = useState(0);
   const rafRef = useRef<number>();
+  const gradientId = useId();
 
   const meta = RISK_LEVEL_META[riskLevel];
+  const gradient = RISK_RING_GRADIENT[riskLevel];
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const clamped = Math.min(100, Math.max(0, value));
@@ -53,13 +57,18 @@ export function ComplianceGaugeRing({
   return (
     <div className="relative inline-flex flex-col items-center" style={{ width: size }}>
       <svg width={size} height={size} className="-rotate-90">
+        <defs>
+          <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={gradient.from} />
+            <stop offset="100%" stopColor={gradient.to} />
+          </linearGradient>
+        </defs>
         <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="#0F3460"
-          strokeOpacity={0.35}
+          stroke={TRACK_COLOR}
           strokeWidth={strokeWidth}
         />
         <circle
@@ -67,18 +76,18 @@ export function ComplianceGaugeRing({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke={meta.color}
+          stroke={`url(#${gradientId})`}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={dashOffset}
-          style={{ filter: `drop-shadow(0 0 8px ${meta.color}66)` }}
+          style={{ filter: `drop-shadow(0 0 8px ${gradient.to}55)` }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span
-          className="font-display font-bold tabular-nums text-text-primary"
-          style={{ fontSize: size / 5 }}
+          className="font-mono font-medium tabular-nums"
+          style={{ fontSize: size / 5, color: gradient.to }}
         >
           {displayValue.toFixed(1)}
           <span className="text-text-muted" style={{ fontSize: size / 10 }}>
@@ -88,7 +97,11 @@ export function ComplianceGaugeRing({
         {showRiskLabel && (
           <span
             className="mt-1 rounded-full border px-3 py-0.5 font-mono text-xs font-semibold uppercase tracking-wider"
-            style={{ color: meta.color, borderColor: `${meta.color}66`, backgroundColor: `${meta.color}1a` }}
+            style={{
+              color: gradient.to,
+              borderColor: `${gradient.to}66`,
+              backgroundColor: `${gradient.to}1a`,
+            }}
           >
             {meta.label}
           </span>

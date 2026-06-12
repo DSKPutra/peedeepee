@@ -402,7 +402,7 @@ export const TIMELINE_META: Record<
   RemediationTimeline,
   { label: string; range: string; color: string }
 > = {
-  IMMEDIATE: { label: 'Immediate', range: '0-30 hari', color: '#FF3B3B' },
-  SHORT_TERM: { label: 'Short-term', range: '1-3 bulan', color: '#FFB800' },
-  LONG_TERM: { label: 'Long-term', range: '3-12 bulan', color: '#4D9FFF' },
+  IMMEDIATE: { label: 'Immediate', range: '0-30 hari', color: '#EF4444' },
+  SHORT_TERM: { label: 'Short-term', range: '1-3 bulan', color: '#F59E0B' },
+  LONG_TERM: { label: 'Long-term', range: '3-12 bulan', color: '#60A5FA' },
 };

@@ -36,23 +36,23 @@ export function DomainScoreBarChart({ domainScores, onBarClick }: DomainScoreBar
         <XAxis
           type="number"
           domain={[0, 100]}
-          tick={{ fill: '#7B9EC5', fontSize: 10, fontFamily: 'JetBrains Mono' }}
-          stroke="#1E3A5F"
+          tick={{ fill: '#666880', fontSize: 10, fontFamily: '"IBM Plex Mono"' }}
+          stroke="#2A2D3E"
         />
         <YAxis
           type="category"
           dataKey="name"
           width={120}
-          tick={{ fill: '#E8F4FD', fontSize: 11, fontFamily: 'Inter' }}
-          stroke="#1E3A5F"
+          tick={{ fill: '#F0F1FA', fontSize: 11, fontFamily: '"Plus Jakarta Sans"' }}
+          stroke="#2A2D3E"
         />
         <RechartsTooltip
-          cursor={{ fill: 'rgba(15, 52, 96, 0.25)' }}
+          cursor={{ fill: 'rgba(74, 81, 224, 0.12)' }}
           contentStyle={{
-            backgroundColor: '#0D1B2E',
-            border: '1px solid #1E3A5F',
+            backgroundColor: '#1E2030',
+            border: '1px solid #2A2D3E',
             borderRadius: 8,
-            color: '#E8F4FD',
+            color: '#F0F1FA',
             fontSize: 12,
           }}
           formatter={(value: number, _name, item) => [
@@ -76,7 +76,7 @@ export function DomainScoreBarChart({ domainScores, onBarClick }: DomainScoreBar
             dataKey="skor"
             position="right"
             formatter={(v: number) => `${v}%`}
-            style={{ fill: '#E8F4FD', fontSize: 11, fontFamily: 'JetBrains Mono' }}
+            style={{ fill: '#F0F1FA', fontSize: 11, fontFamily: '"IBM Plex Mono"' }}
           />
         </Bar>
       </BarChart>

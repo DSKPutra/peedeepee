@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Lock, Play, RotateCcw } from 'lucide-react';
 import type { AnswerValue } from '@/types';
@@ -15,6 +15,7 @@ import { AssessmentStepper } from '@/components/assessment/AssessmentStepper';
 import { DomainIntroCard } from '@/components/assessment/DomainIntroCard';
 import { QuestionCard } from '@/components/assessment/QuestionCard';
 import { AssessmentReviewModal } from '@/components/assessment/AssessmentReviewModal';
+import { driveService } from '@/services/driveService';
 
 export default function Assessment() {
   const navigate = useNavigate();
@@ -46,6 +47,19 @@ export default function Assessment() {
     () => assessments.filter((a) => a.status === 'IN_PROGRESS'),
     [assessments]
   );
+
+  // Debounced backup progress ke Drive (5 detik setelah jawaban terakhir)
+  const syncTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const answersJson = active ? JSON.stringify(active.answers) : '';
+  useEffect(() => {
+    if (!active || answersJson === '{}') return;
+    clearTimeout(syncTimerRef.current);
+    syncTimerRef.current = setTimeout(() => {
+      void driveService.saveProgress(active, active.orgName);
+    }, 5000);
+    return () => clearTimeout(syncTimerRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answersJson]);
 
   // ── RBAC guard ──
   if (!hasPermission('start_assessment')) {
@@ -180,8 +194,10 @@ export default function Assessment() {
       // jeda kecil agar loading state terlihat (simulasi komputasi)
       await new Promise((r) => setTimeout(r, 600));
       const completed = { ...active, status: 'COMPLETED' as const, completedAt: new Date().toISOString() };
-      computeAndStore(completed);
+      const result = computeAndStore(completed);
       completeAssessment(active.id);
+      clearTimeout(syncTimerRef.current);
+      void driveService.saveCompleted(completed, result, completed.orgName);
       navigate(`/report/${active.id}`);
     } finally {
       setSubmitting(false);

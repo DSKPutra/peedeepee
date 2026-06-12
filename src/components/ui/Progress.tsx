@@ -6,12 +6,12 @@ interface ProgressProps {
   showLabel?: boolean;
 }
 
-export function Progress({ value, color = '#00D4FF', className = '', showLabel = false }: ProgressProps) {
+export function Progress({ value, color = '#E8AC1A', className = '', showLabel = false }: ProgressProps) {
   const clamped = Math.min(100, Math.max(0, value));
   return (
     <div className={`flex items-center gap-3 ${className}`}>
       <div
-        className="h-2 flex-1 overflow-hidden rounded-full bg-primary/30"
+        className="h-2 flex-1 overflow-hidden rounded-full bg-elevated"
         role="progressbar"
         aria-valuenow={Math.round(clamped)}
         aria-valuemin={0}

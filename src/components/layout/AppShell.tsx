@@ -27,7 +27,7 @@ export function AppShell() {
           <Link to="/" className="flex items-center gap-2.5">
             <img src={logo} alt="XyberXecurity" className="h-8 w-8" />
             <div className="hidden sm:block">
-              <p className="font-display text-sm font-bold leading-tight text-text-primary">
+              <p className="bg-gradient-to-br from-text-primary to-accent bg-clip-text font-display text-sm font-extrabold leading-tight text-transparent">
                 PDP Readiness
               </p>
               <p className="font-mono text-[10px] uppercase tracking-wider text-accent">

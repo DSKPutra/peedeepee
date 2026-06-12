@@ -1,7 +1,7 @@
 <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- XyberXecurity XX mark: shield silhouette + data X -->
-  <path d="M24 3L40 9V22C40 32.5 33.2 41.2 24 44C14.8 41.2 8 32.5 8 22V9L24 3Z" stroke="#00D4FF" stroke-width="2" fill="#0D1B2E"/>
-  <path d="M16 15L24 24L16 33" stroke="#00C896" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M32 15L24 24L32 33" stroke="#00D4FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M33 8.5L36.5 6.5L38.5 10L35 12L33 8.5Z" fill="#2563EB"/>
+  <!-- XyberXecurity XX mark: shield silhouette + data X (Midnight Slate + Warm Amber) -->
+  <path d="M24 3L40 9V22C40 32.5 33.2 41.2 24 44C14.8 41.2 8 32.5 8 22V9L24 3Z" stroke="#6269ED" stroke-width="2" fill="#161820"/>
+  <path d="M16 15L24 24L16 33" stroke="#E8AC1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M32 15L24 24L32 33" stroke="#848CF3" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M33 8.5L36.5 6.5L38.5 10L35 12L33 8.5Z" fill="#4A51E0"/>
 </svg>

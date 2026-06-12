@@ -10,13 +10,14 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    'bg-accent text-background font-semibold hover:shadow-[0_0_24px_rgba(0,212,255,0.35)] active:scale-[0.985]',
-  secondary: 'bg-primary text-text-primary hover:bg-primary/80 active:scale-[0.985]',
+    'bg-gradient-to-br from-accent-400 to-accent-500 text-background font-semibold shadow-btn-accent hover:shadow-btn-accent-hover hover:-translate-y-px active:scale-[0.985]',
+  secondary:
+    'bg-gradient-to-br from-primary-500 to-primary-600 text-white border border-primary-400/60 hover:shadow-[0_0_20px_rgba(74,81,224,0.3)] hover:-translate-y-px active:scale-[0.985]',
   outline:
-    'border border-border text-text-primary bg-transparent hover:border-accent/60 hover:text-accent active:scale-[0.985]',
-  ghost: 'text-text-muted hover:text-text-primary hover:bg-surface active:scale-[0.985]',
+    'border border-border text-text-primary bg-transparent hover:bg-overlay hover:border-border-strong active:scale-[0.985]',
+  ghost: 'text-text-muted hover:text-text-primary hover:bg-overlay active:scale-[0.985]',
   danger: 'bg-danger/15 text-danger border border-danger/40 hover:bg-danger/25 active:scale-[0.985]',
-  success: 'bg-success text-background font-semibold hover:shadow-[0_0_24px_rgba(0,200,150,0.35)] active:scale-[0.985]',
+  success: 'bg-success text-background font-semibold hover:shadow-[0_0_24px_rgba(34,197,94,0.35)] active:scale-[0.985]',
 };
 
 const sizeClasses: Record<Size, string> = {

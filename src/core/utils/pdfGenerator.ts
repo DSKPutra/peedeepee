@@ -10,16 +10,16 @@ const MARGIN = 18;
 const CONTENT_W = PAGE_W - MARGIN * 2;
 
 const COLORS = {
-  navy: '#0F3460',
-  darkBlue: '#16213E',
-  cyan: '#00B8DD',
-  green: '#00A87E',
-  amber: '#D99C00',
-  red: '#E02B2B',
-  text: '#1A2433',
-  muted: '#5A6B82',
-  light: '#F4F7FB',
-  border: '#C9D6E8',
+  navy: '#2D32A0',
+  darkBlue: '#161820',
+  cyan: '#4A51E0',
+  green: '#16A34A',
+  amber: '#C9880D',
+  red: '#DC2626',
+  text: '#1F2433',
+  muted: '#5A6178',
+  light: '#F3F4FA',
+  border: '#CDD0E0',
 };
 
 interface PdfCtx {
@@ -303,10 +303,29 @@ export function generatePdfReport(data: ReportExportData): void {
 
   // Section 1 — Executive Summary
   sectionTitle(ctx, '1', 'Executive Summary', generatedAt);
+  if (data.preparedBy) {
+    keyValue(ctx, 'Disiapkan oleh', `${data.preparedBy.fullName} — ${data.preparedBy.jobTitle}`, generatedAt);
+  }
   keyValue(ctx, 'Organisasi', data.org.name, generatedAt);
   keyValue(ctx, 'Industri', data.org.industry, generatedAt);
   keyValue(ctx, 'Tanggal Assessment', formatDate(data.assessment.completedAt ?? data.assessment.createdAt), generatedAt);
   ctx.y += 2;
+
+  // Catatan dasar persetujuan pemrosesan data (Pasal 20-21 UU PDP)
+  if (data.preparedBy) {
+    ensureSpace(ctx, 16, generatedAt);
+    setFill(doc, COLORS.light);
+    doc.roundedRect(MARGIN, ctx.y - 2, CONTENT_W, 13, 1.5, 1.5, 'F');
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(8);
+    setText(doc, COLORS.muted);
+    const consentNote = doc.splitTextToSize(
+      `Laporan ini dibuat berdasarkan persetujuan pemrosesan data yang diberikan pada ${data.preparedBy.consentGivenAt} (Consent ID: ${data.preparedBy.consentId}).`,
+      CONTENT_W - 6
+    );
+    doc.text(consentNote, MARGIN + 3, ctx.y + 3);
+    ctx.y += 16;
+  }
 
   const meta = RISK_LEVEL_META[data.result.riskLevel];
   // Gauge sederhana: bar compliance index

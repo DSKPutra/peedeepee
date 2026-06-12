@@ -3,6 +3,7 @@ import { RISK_LEVEL_META } from '@/types';
 import { DOMAINS, getDomain } from '@/core/constants/domains';
 import { getQuestion } from '@/core/constants/questions';
 import { TIMELINE_META } from '@/core/constants/recommendations';
+import { getConsentRecord } from '@/core/utils/consent';
 
 export function formatDate(iso: string | null): string {
   if (!iso) return '—';
@@ -29,16 +30,27 @@ export function formatPercent(n: number): string {
 }
 
 export const ORG_SIZE_LABEL: Record<string, string> = {
-  SMALL: 'Kecil (< 50 karyawan)',
-  MEDIUM: 'Menengah (50-250 karyawan)',
-  LARGE: 'Besar (250-1000 karyawan)',
-  ENTERPRISE: 'Enterprise (> 1000 karyawan)',
+  STARTUP: 'Startup / UMKM (< 50 karyawan)',
+  SMALL: 'Perusahaan Kecil (50-250 karyawan)',
+  MEDIUM: 'Perusahaan Menengah (251-1000 karyawan)',
+  LARGE: 'Perusahaan Besar (1001-5000 karyawan)',
+  ENTERPRISE: 'Korporasi (> 5000 karyawan)',
 };
+
+export interface ReportPreparedBy {
+  fullName: string;
+  jobTitle: string;
+  organization: string;
+  consentId: string;
+  consentGivenAt: string;
+}
 
 export interface ReportExportData {
   org: Organization;
   assessment: Assessment;
   result: AssessmentResult;
+  /** Identitas pemberi consent (Pasal 20-21 UU PDP) untuk header laporan. */
+  preparedBy: ReportPreparedBy | null;
   domainRows: {
     name: string;
     pasalRange: string;
@@ -124,7 +136,18 @@ export function buildReportData(
       })),
   }));
 
-  return { org, assessment, result, domainRows, gapRows, roadmap, answerRows };
+  const consent = getConsentRecord();
+  const preparedBy = consent
+    ? {
+        fullName: consent.userIdentity.fullName,
+        jobTitle: consent.userIdentity.jobTitle,
+        organization: consent.userIdentity.organization,
+        consentId: consent.consentId,
+        consentGivenAt: consent.consentGivenAt,
+      }
+    : null;
+
+  return { org, assessment, result, preparedBy, domainRows, gapRows, roadmap, answerRows };
 }
 
 export const LEGAL_DISCLAIMER =

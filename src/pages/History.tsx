@@ -119,15 +119,15 @@ export default function History() {
           </CardHeader>
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={trendData} margin={{ top: 8, right: 16, bottom: 4, left: -16 }}>
-              <CartesianGrid stroke="#1E3A5F" strokeDasharray="3 3" />
-              <XAxis dataKey="tanggal" tick={{ fill: '#7B9EC5', fontSize: 11 }} stroke="#1E3A5F" />
-              <YAxis domain={[0, 100]} tick={{ fill: '#7B9EC5', fontSize: 10, fontFamily: 'JetBrains Mono' }} stroke="#1E3A5F" />
+              <CartesianGrid stroke="#2A2D3E" strokeDasharray="3 3" />
+              <XAxis dataKey="tanggal" tick={{ fill: '#A8AABE', fontSize: 11 }} stroke="#2A2D3E" />
+              <YAxis domain={[0, 100]} tick={{ fill: '#666880', fontSize: 10, fontFamily: '"IBM Plex Mono"' }} stroke="#2A2D3E" />
               <RechartsTooltip
                 contentStyle={{
-                  backgroundColor: '#0D1B2E',
-                  border: '1px solid #1E3A5F',
+                  backgroundColor: '#1E2030',
+                  border: '1px solid #2A2D3E',
                   borderRadius: 8,
-                  color: '#E8F4FD',
+                  color: '#F0F1FA',
                   fontSize: 12,
                 }}
                 formatter={(v: number) => [`${v.toFixed(1)}%`, 'Compliance Index']}
@@ -135,9 +135,9 @@ export default function History() {
               <Line
                 type="monotone"
                 dataKey="index"
-                stroke="#00D4FF"
+                stroke="#6269ED"
                 strokeWidth={2.5}
-                dot={{ r: 4, fill: '#00D4FF' }}
+                dot={{ r: 4, fill: '#E8AC1A' }}
                 isAnimationActive
               />
             </LineChart>
@@ -208,7 +208,7 @@ export default function History() {
                         onChange={() => toggleCompare(a.id)}
                         disabled={!result}
                         aria-label={`Bandingkan ${a.id}`}
-                        className="h-4 w-4 accent-[#00D4FF]"
+                        className="h-4 w-4 accent-[#E8AC1A]"
                       />
                     </td>
                     <td className="py-3 pr-3 text-xs text-text-muted whitespace-nowrap">

@@ -2,9 +2,13 @@ import { Suspense, lazy, useEffect } from 'react';
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/layout/ErrorBoundary';
 import { AppShell } from '@/components/layout/AppShell';
+import { ConsentGuard } from '@/components/layout/ConsentGuard';
+import { DriveSyncIndicator } from '@/components/drive/DriveSyncIndicator';
+import { driveService } from '@/services/driveService';
 import { seedDemoDataIfNeeded } from '@/core/utils/seedDemoData';
 
 const LandingPage = lazy(() => import('@/pages/LandingPage'));
+const PreAssessment = lazy(() => import('@/pages/PreAssessment'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const Assessment = lazy(() => import('@/pages/Assessment'));
 const Report = lazy(() => import('@/pages/Report'));
@@ -25,6 +29,11 @@ function PageLoader() {
 export default function App() {
   useEffect(() => {
     seedDemoDataIfNeeded();
+    // Flush antrean Drive saat app dimuat dan saat koneksi kembali online
+    void driveService.flushQueue();
+    const handleOnline = () => void driveService.flushQueue();
+    window.addEventListener('online', handleOnline);
+    return () => window.removeEventListener('online', handleOnline);
   }, []);
 
   return (
@@ -33,16 +42,23 @@ export default function App() {
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<LandingPage />} />
-            <Route element={<AppShell />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/assessment" element={<Assessment />} />
-              <Route path="/report/:assessmentId" element={<Report />} />
-              <Route path="/history" element={<History />} />
-              <Route path="/settings" element={<Settings />} />
+            <Route path="/pre-assessment" element={<PreAssessment />} />
+
+            {/* Halaman yang memproses data pribadi — wajib consent valid */}
+            <Route element={<ConsentGuard />}>
+              <Route element={<AppShell />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/assessment" element={<Assessment />} />
+                <Route path="/report/:assessmentId" element={<Report />} />
+                <Route path="/history" element={<History />} />
+                <Route path="/settings" element={<Settings />} />
+              </Route>
             </Route>
+
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
+        <DriveSyncIndicator />
       </HashRouter>
     </ErrorBoundary>
   );

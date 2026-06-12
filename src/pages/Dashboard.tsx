@@ -10,6 +10,8 @@ import { useOrgStore } from '@/store/orgStore';
 import { buildReportData } from '@/core/utils/reportFormatter';
 import { generatePdfReport } from '@/core/utils/pdfGenerator';
 import { classifyRiskLevel } from '@/core/utils/riskClassifier';
+import { firstNameOf, getConsentRecord } from '@/core/utils/consent';
+import { driveService } from '@/services/driveService';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -48,6 +50,8 @@ export default function Dashboard() {
     return worst;
   }, [result]);
 
+  const consent = getConsentRecord();
+
   const handleExport = async () => {
     if (!latest || !result || !organization) return;
     setExporting(true);
@@ -55,6 +59,7 @@ export default function Dashboard() {
       // beri waktu UI merender state loading sebelum proses sinkron jsPDF
       await new Promise((r) => setTimeout(r, 60));
       generatePdfReport(buildReportData(organization, latest, result));
+      void driveService.saveReport(result, latest.orgName);
     } finally {
       setExporting(false);
     }
@@ -89,6 +94,16 @@ export default function Dashboard() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
+          {consent && (
+            <p className="mb-1 text-sm text-text-muted">
+              Selamat datang,{' '}
+              <span className="font-semibold text-accent">
+                {firstNameOf(consent.userIdentity.fullName)}
+              </span>{' '}
+              👋 — Anda mengakses sebagai {consent.userIdentity.jobTitle} dari{' '}
+              {consent.userIdentity.organization}.
+            </p>
+          )}
           <h1 className="font-display text-2xl font-bold text-text-primary sm:text-3xl">
             Compliance Dashboard
           </h1>
@@ -108,7 +123,7 @@ export default function Dashboard() {
 
       {/* ── Row 1: KPI Cards ── */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Card accentTop>
+        <Card className="border-l-[3px] border-l-accent">
           <p className="font-mono text-[11px] uppercase tracking-wider text-text-muted">
             Total Compliance Index
           </p>
@@ -129,7 +144,7 @@ export default function Dashboard() {
           </div>
         </Card>
 
-        <Card>
+        <Card className="border-l-[3px]" style={{ borderLeftColor: meta.color }}>
           <p className="font-mono text-[11px] uppercase tracking-wider text-text-muted">
             Status Risiko
           </p>
@@ -153,7 +168,7 @@ export default function Dashboard() {
           </div>
         </Card>
 
-        <Card>
+        <Card className="border-l-[3px] border-l-danger">
           <p className="font-mono text-[11px] uppercase tracking-wider text-text-muted">
             Total Temuan
           </p>
@@ -169,7 +184,7 @@ export default function Dashboard() {
           </p>
         </Card>
 
-        <Card>
+        <Card className="border-l-[3px] border-l-orange-400">
           <p className="font-mono text-[11px] uppercase tracking-wider text-text-muted">
             Domain Paling Kritis
           </p>

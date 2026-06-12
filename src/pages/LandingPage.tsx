@@ -1,6 +1,9 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
+  CheckCircle2,
+  X,
   BarChart3,
   ClipboardList,
   FileText,
@@ -43,25 +46,52 @@ const FEATURES = [
 
 /** Partikel dekoratif CSS-only di hero. */
 const PARTICLES = [
-  { size: 6, top: '15%', left: '8%', color: '#00D4FF', delay: '0s' },
-  { size: 4, top: '70%', left: '12%', color: '#00C896', delay: '1.2s' },
-  { size: 8, top: '25%', left: '85%', color: '#00D4FF', delay: '0.6s' },
-  { size: 5, top: '60%', left: '90%', color: '#0F3460', delay: '2s' },
-  { size: 3, top: '40%', left: '20%', color: '#00C896', delay: '2.8s' },
-  { size: 7, top: '80%', left: '75%', color: '#00D4FF', delay: '1.8s' },
-  { size: 4, top: '10%', left: '60%', color: '#00C896', delay: '0.3s' },
-  { size: 5, top: '85%', left: '40%', color: '#00D4FF', delay: '3.2s' },
+  { size: 6, top: '15%', left: '8%', color: '#6269ED', delay: '0s' },
+  { size: 4, top: '70%', left: '12%', color: '#E8AC1A', delay: '1.2s' },
+  { size: 8, top: '25%', left: '85%', color: '#6269ED', delay: '0.6s' },
+  { size: 5, top: '60%', left: '90%', color: '#4A51E0', delay: '2s' },
+  { size: 3, top: '40%', left: '20%', color: '#E8AC1A', delay: '2.8s' },
+  { size: 7, top: '80%', left: '75%', color: '#848CF3', delay: '1.8s' },
+  { size: 4, top: '10%', left: '60%', color: '#E8AC1A', delay: '0.3s' },
+  { size: 5, top: '85%', left: '40%', color: '#6269ED', delay: '3.2s' },
 ];
 
+import { clearWithdrawalNotice, hasWithdrawalNotice } from '@/core/utils/consent';
+
 export default function LandingPage() {
+  // Baca flag di initializer (idempotent), hapus setelah render pertama —
+  // aman terhadap double-invoke React StrictMode.
+  const [showWithdrawal, setShowWithdrawal] = useState(() => hasWithdrawalNotice());
+  useEffect(() => {
+    if (showWithdrawal) clearWithdrawalNotice();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="min-h-screen bg-background grid-bg">
+      {/* Notifikasi penarikan persetujuan (Pasal 9) */}
+      {showWithdrawal && (
+        <div className="fixed left-1/2 top-4 z-50 flex w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 items-start gap-3 rounded-lg border border-success/40 bg-surface p-4 shadow-card animate-fade-in">
+          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
+          <p className="text-sm leading-relaxed text-text-muted">
+            <span className="font-semibold text-text-primary">Persetujuan Anda telah ditarik.</span>{' '}
+            Data Anda telah dihapus dari browser ini.
+          </p>
+          <button
+            onClick={() => setShowWithdrawal(false)}
+            aria-label="Tutup notifikasi"
+            className="ml-auto rounded p-0.5 text-text-muted hover:text-text-primary"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
       {/* ── Hero ── */}
       <section className="relative overflow-hidden px-4 pb-20 pt-16 sm:pt-24">
         {/* radial glow */}
         <div
-          className="pointer-events-none absolute left-1/2 top-0 h-[480px] w-[720px] -translate-x-1/2 rounded-full opacity-25"
-          style={{ background: 'radial-gradient(ellipse, #0F3460 0%, transparent 65%)' }}
+          className="pointer-events-none absolute left-1/2 top-0 h-[480px] w-[720px] -translate-x-1/2 rounded-full opacity-30"
+          style={{ background: 'radial-gradient(ellipse, rgba(74,81,224,0.35) 0%, transparent 65%)' }}
         />
         {PARTICLES.map((p, i) => (
           <span
@@ -90,7 +120,7 @@ export default function LandingPage() {
           <h1 className="mt-4 font-display text-4xl font-bold leading-tight text-text-primary sm:text-6xl">
             Ukur Kesiapan PDP
             <br />
-            <span className="bg-gradient-to-r from-accent to-success bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#F0F1FA] via-[#A8AABE] to-[#E8AC1A] bg-clip-text text-transparent">
               Organisasi Anda
             </span>
           </h1>
@@ -102,14 +132,14 @@ export default function LandingPage() {
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               to="/assessment"
-              className="inline-flex h-12 items-center gap-2 rounded-md bg-accent px-7 text-base font-semibold text-background transition-all hover:shadow-[0_0_28px_rgba(0,212,255,0.4)]"
+              className="inline-flex h-12 items-center gap-2 rounded-lg bg-gradient-to-br from-accent-400 to-accent-500 px-7 text-base font-semibold text-background shadow-btn-accent transition-all hover:shadow-btn-accent-hover hover:-translate-y-px"
             >
               Mulai Assessment
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               to="/dashboard"
-              className="inline-flex h-12 items-center gap-2 rounded-md border border-border px-7 text-base text-text-primary transition-colors hover:border-accent/60 hover:text-accent"
+              className="inline-flex h-12 items-center gap-2 rounded-lg border border-border px-7 text-base text-text-muted transition-colors hover:border-border-strong hover:bg-overlay hover:text-text-primary"
             >
               Lihat Demo Dashboard
             </Link>

@@ -2,6 +2,35 @@
 > Comprehensive UU PDP No. 27 Tahun 2022 Compliance Engine.
 > Powered by **XyberXecurity by Dea Saka Kurnia Putra**.
 
+## 🌐 Live Demo
+https://dskputra.github.io/peedeepee/
+
+## 🔄 Deploy Status
+![Deploy](https://github.com/DSKPutra/peedeepee/actions/workflows/deploy.yml/badge.svg)
+
+## ✅ UU PDP Self-Compliance
+Aplikasi ini comply terhadap UU PDP No. 27 Tahun 2022 dalam pengoperasiannya sendiri — Pre-Assessment Gate 3 langkah (Privacy Notice → Identitas → Consent) wajib dilalui sebelum data pribadi diproses:
+
+- Privacy Notice 8 section: Pasal 20-21 ✅
+- Explicit consent dengan bukti terekam (consentId UUID + timestamp WIB): Pasal 20 ayat (2) huruf a ✅
+- Hak Subjek Data (akses, koreksi, hapus, tarik consent, portabilitas): Pasal 5-16 ✅
+- Batasan tujuan penggunaan (purpose limitation): Pasal 16 ✅
+- Hak penarikan consent dengan double confirmation: Pasal 9 ✅
+- Verifikasi usia: Pasal 24 ✅
+- Privacy by design: IP address & User Agent tidak direkam ✅
+
+## ☁️ Setup Google Drive Sync (Opsional, Gratis)
+Backup otomatis consent record, progress assessment, dan laporan ke Google Drive via Apps Script (tanpa OAuth):
+
+1. Buka script.google.com → New Project
+2. Paste kode dari `scripts/apps-script-receiver.js`
+3. Deploy → Web App → Execute as: **Me** → Who has access: **Anyone**
+4. Copy URL hasil deploy → simpan sebagai `VITE_APPS_SCRIPT_URL` di:
+   - `.env.local` (untuk development)
+   - GitHub Secrets (untuk production: Settings → Secrets → Actions → `VITE_APPS_SCRIPT_URL`)
+
+Fitur: offline queue (data antre di localStorage saat offline, auto-flush saat online kembali), indikator status sync floating, dan tombol "Sync Ulang Semua Data" di Settings.
+
 ## 🚀 Overview
 Aplikasi berbasis web untuk mengukur, menganalisis, dan memitigasi risiko kepatuhan organisasi terhadap regulasi Pelindungan Data Pribadi (UU PDP) di Indonesia.
 
@@ -168,7 +197,7 @@ Setiap pertanyaan menyertakan: referensi pasal spesifik, bobot 1–3, 4 opsi jaw
 | **React 18 + TypeScript** | Type-safety end-to-end untuk domain model kompleks (Question → Answer → Gap → Recommendation); ekosistem komponen matang. |
 | **Vite** | Dev server instan + HMR cepat; build production teroptimasi tanpa konfigurasi berat. |
 | **Zustand + persist middleware** | State management minimal-boilerplate; middleware `persist` memberikan localStorage sync otomatis — mensimulasikan backend tanpa server. |
-| **Tailwind CSS v3** | Design token (warna, tipografi) terpusat di config; utility-first mempercepat iterasi UI dark-mode premium. |
+| **Tailwind CSS v3** | Design token "Midnight Slate + Warm Amber" (Plus Jakarta Sans + IBM Plex Mono) terpusat di config; utility-first mempercepat iterasi UI dark-mode premium. |
 | **Recharts** | Radar/Bar/Line chart deklaratif berbasis SVG dengan animasi mount bawaan; mudah ditheme dengan palet kustom. |
 | **jsPDF** | Generate PDF vektor murni di client (cover page, TOC, tabel, watermark) tanpa dependensi server. |
 | **React Hook Form + Zod** | Validasi form type-safe dengan skema deklaratif; error message terlokalisasi. |

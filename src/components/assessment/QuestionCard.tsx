@@ -65,7 +65,7 @@ export function QuestionCard({
               onClick={() => onAnswer(option.value)}
               className={`group flex items-start gap-3 rounded-md border p-3.5 text-left transition-all duration-150 ${
                 selected
-                  ? 'border-accent bg-accent/10 shadow-[0_0_16px_rgba(0,212,255,0.12)]'
+                  ? 'border-accent bg-accent/10 shadow-[0_0_16px_rgba(232,172,26,0.12)]'
                   : 'border-border bg-background/40 hover:border-accent/40 hover:bg-surface'
               }`}
             >

@@ -42,7 +42,7 @@ export interface Question {
 
 // ─── Organization & Assessment ─────────────────────────────────────────────
 
-export type OrgSize = 'SMALL' | 'MEDIUM' | 'LARGE' | 'ENTERPRISE';
+export type OrgSize = 'STARTUP' | 'SMALL' | 'MEDIUM' | 'LARGE' | 'ENTERPRISE';
 
 export interface Organization {
   id: string;
@@ -104,6 +104,52 @@ export interface AssessmentResult {
   generatedAt: string;
 }
 
+// ─── Consent & Privacy (UU PDP self-compliance) ────────────────────────────
+
+export interface UserIdentity {
+  fullName: string;
+  jobTitle: string;
+  organization: string;
+  industry: string;
+  orgSize: OrgSize;
+}
+
+export interface ConsentRecord {
+  version: '1.0';
+  consentId: string;
+  timestamp: string; // ISO 8601 dengan offset +07:00
+  timezone: 'Asia/Jakarta';
+  userIdentity: UserIdentity;
+  consents: {
+    mainConsent: boolean;
+    privacyNoticeRead: boolean;
+    usageLimitation: boolean;
+    ageVerification: boolean;
+    notificationOptIn: boolean;
+    notificationEmail?: string;
+  };
+  privacyNoticeVersion: '1.0';
+  privacyNoticeReadAt: string;
+  formCompletedAt: string;
+  consentGivenAt: string;
+  dataController: 'XyberXecurity';
+  legalBasis: string;
+  purposeLimitation: string;
+  storageLocation: string;
+  userAgent: null; // Tidak direkam (privacy by design)
+  ipAddress: null; // Tidak direkam (privacy by design)
+}
+
+export interface WithdrawalRecord {
+  withdrawnAt: string;
+  reason: 'user_initiated';
+}
+
+// ─── Google Drive Sync ─────────────────────────────────────────────────────
+
+export type SyncStatus = 'idle' | 'syncing' | 'synced' | 'error' | 'queued';
+export type ExportType = 'consent' | 'assessment' | 'report' | 'export';
+
 // ─── RBAC ──────────────────────────────────────────────────────────────────
 
 export type UserRole = 'ADMINISTRATOR' | 'DPO' | 'AUDITOR';
@@ -145,7 +191,7 @@ export interface RiskLevelMeta {
 export const RISK_LEVEL_META: Record<RiskLevel, RiskLevelMeta> = {
   CRITICAL: {
     label: 'KRITIS',
-    color: '#FF3B3B',
+    color: '#EF4444',
     textClass: 'text-danger',
     bgClass: 'bg-danger/15',
     borderClass: 'border-danger/40',
@@ -153,7 +199,7 @@ export const RISK_LEVEL_META: Record<RiskLevel, RiskLevelMeta> = {
   },
   HIGH: {
     label: 'TINGGI',
-    color: '#FF8A3B',
+    color: '#FB923C',
     textClass: 'text-orange-400',
     bgClass: 'bg-orange-400/15',
     borderClass: 'border-orange-400/40',
@@ -161,7 +207,7 @@ export const RISK_LEVEL_META: Record<RiskLevel, RiskLevelMeta> = {
   },
   MEDIUM: {
     label: 'SEDANG',
-    color: '#FFB800',
+    color: '#EAB308',
     textClass: 'text-warning',
     bgClass: 'bg-warning/15',
     borderClass: 'border-warning/40',
@@ -169,7 +215,7 @@ export const RISK_LEVEL_META: Record<RiskLevel, RiskLevelMeta> = {
   },
   LOW: {
     label: 'RENDAH',
-    color: '#4D9FFF',
+    color: '#60A5FA',
     textClass: 'text-info',
     bgClass: 'bg-info/15',
     borderClass: 'border-info/40',
@@ -177,10 +223,19 @@ export const RISK_LEVEL_META: Record<RiskLevel, RiskLevelMeta> = {
   },
   COMPLIANT: {
     label: 'PATUH',
-    color: '#00C896',
+    color: '#4ADE80',
     textClass: 'text-success',
     bgClass: 'bg-success/15',
     borderClass: 'border-success/40',
     description: 'Postur kepatuhan baik',
   },
+};
+
+/** Gradient ring per risk level (from → to) untuk gauge SVG. */
+export const RISK_RING_GRADIENT: Record<RiskLevel, { from: string; to: string }> = {
+  CRITICAL: { from: '#DC2626', to: '#EF4444' },
+  HIGH: { from: '#EA580C', to: '#FB923C' },
+  MEDIUM: { from: '#CA8A04', to: '#EAB308' },
+  LOW: { from: '#2563EB', to: '#60A5FA' },
+  COMPLIANT: { from: '#16A34A', to: '#4ADE80' },
 };

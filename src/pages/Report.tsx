@@ -14,6 +14,7 @@ import {
 } from '@/core/utils/reportFormatter';
 import { generatePdfReport } from '@/core/utils/pdfGenerator';
 import { classifyRiskLevel } from '@/core/utils/riskClassifier';
+import { driveService } from '@/services/driveService';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
@@ -75,6 +76,7 @@ export default function Report() {
     try {
       await new Promise((r) => setTimeout(r, 60));
       generatePdfReport(reportData);
+      void driveService.saveReport(result, assessment.orgName);
     } finally {
       setExporting(false);
     }
@@ -105,14 +107,25 @@ export default function Report() {
           1 · Executive Summary
         </h2>
         <div className="grid gap-4 lg:grid-cols-3">
-          <Card className="lg:col-span-1">
+          <Card className="lg:col-span-1 bg-gradient-to-br from-surface to-elevated">
             <dl className="space-y-3 text-sm">
               {[
+                ...(reportData.preparedBy
+                  ? [
+                      [
+                        'Disiapkan oleh',
+                        `${reportData.preparedBy.fullName} — ${reportData.preparedBy.jobTitle}`,
+                      ],
+                    ]
+                  : []),
                 ['Organisasi', reportData.org.name],
                 ['Industri', reportData.org.industry],
                 ['Ukuran', ORG_SIZE_LABEL[reportData.org.size] ?? reportData.org.size],
                 ['DPO', reportData.org.dpoName],
                 ['Tanggal Assessment', formatDate(assessment.completedAt ?? assessment.createdAt)],
+                ...(reportData.preparedBy
+                  ? [['Consent ID', reportData.preparedBy.consentId]]
+                  : []),
               ].map(([k, v]) => (
                 <div key={k}>
                   <dt className="font-mono text-[11px] uppercase tracking-wider text-text-muted">{k}</dt>
