@@ -2,18 +2,21 @@ import { Suspense, lazy, useEffect } from 'react';
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/layout/ErrorBoundary';
 import { AppShell } from '@/components/layout/AppShell';
-import { ConsentGuard } from '@/components/layout/ConsentGuard';
+import { AuthGuard } from '@/components/layout/AuthGuard';
 import { DriveSyncIndicator } from '@/components/drive/DriveSyncIndicator';
 import { driveService } from '@/services/driveService';
 import { seedDemoDataIfNeeded } from '@/core/utils/seedDemoData';
 
 const LandingPage = lazy(() => import('@/pages/LandingPage'));
-const PreAssessment = lazy(() => import('@/pages/PreAssessment'));
+const LoginPage = lazy(() => import('@/pages/auth/LoginPage'));
+const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage'));
+const ForgotPasswordPage = lazy(() => import('@/pages/auth/ForgotPasswordPage'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const Assessment = lazy(() => import('@/pages/Assessment'));
 const Report = lazy(() => import('@/pages/Report'));
 const History = lazy(() => import('@/pages/History'));
 const Settings = lazy(() => import('@/pages/Settings'));
+const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 
 function PageLoader() {
   return (
@@ -41,16 +44,20 @@ export default function App() {
       <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Suspense fallback={<PageLoader />}>
           <Routes>
+            {/* Publik */}
             <Route path="/" element={<LandingPage />} />
-            <Route path="/pre-assessment" element={<PreAssessment />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-            {/* Halaman yang memproses data pribadi — wajib consent valid */}
-            <Route element={<ConsentGuard />}>
+            {/* Terproteksi — wajib autentikasi (consent direkam saat registrasi) */}
+            <Route element={<AuthGuard />}>
               <Route element={<AppShell />}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/assessment" element={<Assessment />} />
                 <Route path="/report/:assessmentId" element={<Report />} />
                 <Route path="/history" element={<History />} />
+                <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/settings" element={<Settings />} />
               </Route>
             </Route>

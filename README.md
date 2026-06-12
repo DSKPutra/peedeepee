@@ -19,17 +19,36 @@ Aplikasi ini comply terhadap UU PDP No. 27 Tahun 2022 dalam pengoperasiannya sen
 - Verifikasi usia: Pasal 24 ✅
 - Privacy by design: IP address & User Agent tidak direkam ✅
 
-## ☁️ Setup Google Drive Sync (Opsional, Gratis)
-Backup otomatis consent record, progress assessment, dan laporan ke Google Drive via Apps Script (tanpa OAuth):
+## 🔐 Autentikasi & Akun
+Sistem akun penuh berbasis Google Sheets (serverless, gratis) via Apps Script:
 
-1. Buka script.google.com → New Project
-2. Paste kode dari `scripts/apps-script-receiver.js`
-3. Deploy → Web App → Execute as: **Me** → Who has access: **Anyone**
-4. Copy URL hasil deploy → simpan sebagai `VITE_APPS_SCRIPT_URL` di:
-   - `.env.local` (untuk development)
-   - GitHub Secrets (untuk production: Settings → Secrets → Actions → `VITE_APPS_SCRIPT_URL`)
+- **Register / Login** dengan email + password (hash SHA-256 + salt per-user di sisi backend)
+- **Sesi 7 hari** dengan token acak; validasi otomatis tiap kali membuka aplikasi
+- **Lupa password** via kode reset 6-karakter yang dikirim ke email (GmailApp)
+- **Profil** 4 tab: Profil · Keamanan (ganti password, keluar semua sesi, hapus akun 3-langkah) · Assessment Saya (filter/sort/paginate) · Data & Privasi (hak subjek data UU PDP)
+- Assessment otomatis tersimpan ke akun Anda di Google Sheets
 
-Fitur: offline queue (data antre di localStorage saat offline, auto-flush saat online kembali), indikator status sync floating, dan tombol "Sync Ulang Semua Data" di Settings.
+Halaman terproteksi (`/dashboard`, `/assessment`, `/report`, `/history`, `/profile`, `/settings`) dijaga `AuthGuard` — wajib login.
+
+## ⚙️ Setup Backend (Wajib — ±5 menit)
+Satu Apps Script Web App menangani autentikasi **dan** Drive sync.
+
+1. Buka https://script.google.com → **New Project** → rename "peedeepee-backend"
+2. Paste **SELURUH** kode dari `scripts/apps-script-backend.js`
+3. (Opsional, untuk fitur lupa password) **Services (+)** → tambahkan **Gmail API**
+4. **Deploy → New Deployment → Web App**
+   - Execute as: **Me**
+   - Who has access: **Anyone**
+5. **Authorize** saat diminta (izinkan akses Sheets + Drive + Gmail)
+6. Copy URL → simpan sebagai `VITE_APPS_SCRIPT_URL`:
+   - `.env.local` (development)
+   - GitHub repo → Settings → Secrets → Actions → `VITE_APPS_SCRIPT_URL` (production)
+
+Spreadsheet `peedeepee-data` (sheet: users, sessions, assessments, audit_log) dibuat **otomatis** saat request pertama — tidak perlu setup manual.
+
+> **DEV MODE (testing lupa password tanpa email):** Apps Script → Project Settings → Script Properties → tambah `DEV_MODE` = `true`. Token reset akan dikembalikan langsung di UI. Hapus di production.
+
+**Catatan teknis:** service layer memakai `POST` dengan `Content-Type: text/plain` (simple request, tanpa preflight) sehingga respons JSON Apps Script dapat dibaca langsung — tanpa `no-cors` dan tanpa polling. Backend juga tetap kompatibel dengan Drive-sync receiver lama (offline queue + indikator status sync tetap berfungsi).
 
 ## 🚀 Overview
 Aplikasi berbasis web untuk mengukur, menganalisis, dan memitigasi risiko kepatuhan organisasi terhadap regulasi Pelindungan Data Pribadi (UU PDP) di Indonesia.

@@ -57,8 +57,14 @@ const PARTICLES = [
 ];
 
 import { clearWithdrawalNotice, hasWithdrawalNotice } from '@/core/utils/consent';
+import { useAuthStore } from '@/store/authStore';
 
 export default function LandingPage() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const primaryCta = isAuthenticated ? '/assessment' : '/register';
+  const secondaryCta = isAuthenticated ? '/dashboard' : '/login';
+  const secondaryLabel = isAuthenticated ? 'Buka Dashboard' : 'Masuk ke Akun';
+
   // Baca flag di initializer (idempotent), hapus setelah render pertama —
   // aman terhadap double-invoke React StrictMode.
   const [showWithdrawal, setShowWithdrawal] = useState(() => hasWithdrawalNotice());
@@ -131,17 +137,17 @@ export default function LandingPage() {
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
-              to="/assessment"
+              to={primaryCta}
               className="inline-flex h-12 items-center gap-2 rounded-lg bg-gradient-to-br from-accent-400 to-accent-500 px-7 text-base font-semibold text-background shadow-btn-accent transition-all hover:shadow-btn-accent-hover hover:-translate-y-px"
             >
               Mulai Assessment
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              to="/dashboard"
+              to={secondaryCta}
               className="inline-flex h-12 items-center gap-2 rounded-lg border border-border px-7 text-base text-text-muted transition-colors hover:border-border-strong hover:bg-overlay hover:text-text-primary"
             >
-              Lihat Demo Dashboard
+              {secondaryLabel}
             </Link>
           </div>
         </div>

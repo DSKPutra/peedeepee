@@ -16,6 +16,8 @@ import { DomainIntroCard } from '@/components/assessment/DomainIntroCard';
 import { QuestionCard } from '@/components/assessment/QuestionCard';
 import { AssessmentReviewModal } from '@/components/assessment/AssessmentReviewModal';
 import { driveService } from '@/services/driveService';
+import { authService } from '@/services/authService';
+import { useAuthStore } from '@/store/authStore';
 
 export default function Assessment() {
   const navigate = useNavigate();
@@ -56,6 +58,8 @@ export default function Assessment() {
     clearTimeout(syncTimerRef.current);
     syncTimerRef.current = setTimeout(() => {
       void driveService.saveProgress(active, active.orgName);
+      const sid = useAuthStore.getState().sessionId;
+      if (sid) void authService.saveAssessment(sid, active);
     }, 5000);
     return () => clearTimeout(syncTimerRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -198,6 +202,8 @@ export default function Assessment() {
       completeAssessment(active.id);
       clearTimeout(syncTimerRef.current);
       void driveService.saveCompleted(completed, result, completed.orgName);
+      const sid = useAuthStore.getState().sessionId;
+      if (sid) void authService.saveAssessment(sid, completed, result);
       navigate(`/report/${active.id}`);
     } finally {
       setSubmitting(false);
