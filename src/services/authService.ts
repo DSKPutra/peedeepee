@@ -24,9 +24,34 @@ async function call<T = unknown>(action: string, body: Record<string, unknown> =
       body: JSON.stringify({ action, ...body }),
     });
     if (!res.ok) return { success: false, error: `HTTP ${res.status}` };
-    return (await res.json()) as ApiResponse<T>;
+
+    const text = await res.text();
+    // Apps Script mengembalikan halaman login Google bila akses deployment
+    // BUKAN "Anyone" — deteksi & beri pesan yang actionable, bukan parse error.
+    if (/accounts\.google\.com|<!doctype html|<html/i.test(text)) {
+      return {
+        success: false,
+        error:
+          'Backend menolak akses (meminta login Google). Buka Apps Script → Deploy → Manage deployments → Edit → set "Who has access" ke "Anyone", lalu deploy versi baru.',
+      };
+    }
+    try {
+      return JSON.parse(text) as ApiResponse<T>;
+    } catch {
+      return {
+        success: false,
+        error:
+          'Respons backend tidak valid. Pastikan kode scripts/apps-script-backend.js sudah dipaste & di-deploy ulang.',
+      };
+    }
   } catch (e) {
-    return { success: false, error: e instanceof Error ? e.message : 'Gagal terhubung ke server' };
+    return {
+      success: false,
+      error:
+        e instanceof Error
+          ? `Gagal terhubung ke backend: ${e.message}`
+          : 'Gagal terhubung ke backend',
+    };
   }
 }
 
